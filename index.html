@@ -15,6 +15,7 @@
   <div class="intro_info" id="intro_info">
     <i class="fac fa-ps5-alt"></i>
     <span class="toast">Press the&nbsp<b>PS</b>&nbspbutton to enable your contoller</span>
+    <!-- <button id="intro_info" class="fac fa-ps5-alt">Connect</button> -->
   </div>
 
   <div class="controller_container" id="controller_container">
@@ -305,12 +306,45 @@
               <h1 id="top_trophy_name"></h1>
               <p id="top_trophy_time"></p>
             </div> -->
-
+            <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+            
             <div class="player_progress_card" id="all_trophies" style="position: relative; margin: 2rem auto; height: 350px; width: 430px;">
               <img id="all_trophies_img" src="C:/Users/7000039265/Desktop/abc.png" 
                    style="position: absolute; top: 10%; left: 55%; width: 100%; height: 85%; object-fit: contain; background: none; border: none;">
-            </div>
+                   <button id="startBtn" class="led-button blue" disabled>
+                    <span class="material-icons mic-icon" id="micIcon">mic</span>
+                    </button>
+
+                    <button id="stopBtn" class="led-button red" disabled>
+                      <span class="material-icons mic-icon red" id="stopMicIcon">mic</span>  
+                      </button>
+                      
+                      <div class="responses">
+                        <ul id="responsesList"></ul>
+                        </div>
+                        <div class="audio-playback">
+                        <audio id="audioPlayback" controls style="display: none;"></audio>
+                        </div>
+                  </div>
             
+
+
+            
+            <button id="disconnectBtn" class="led-button red" disabled>End</button>
+            
+            <!-- <div class="image-container">
+            <img src="C:\Users\7000039265\Desktop\abc.png" alt="A description of the image" class="custom-image">
+            
+            <div id="nameDisplay">ECHO PLAY</div>
+            
+            </div> -->
+           
+            
+
+
+
+
+
             
           </div>
         </div>
@@ -347,6 +381,13 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js'></script>
 <script src='https://npmcdn.com/flickity@2/dist/flickity.pkgd.js'></script>
 <script src='https://use.fontawesome.com/releases/v5.2.0/js/all.js'></script><script  src="./script.js"></script>
+
+
+
+
+
+
+
 
 </body>
 </html>

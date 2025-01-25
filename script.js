@@ -58,17 +58,17 @@ $("#playstation").click(function () {
     $("#last_checkpoint_text").addClass("last_checkpoint_text_anim");
     $("#last_checkpoint_name").addClass("last_checkpoint_name_anim");
     $("#last_checkpoint_time").addClass("last_checkpoint_time_anim");
-    $("#last_trophy_img").addClass("last_trophy_img_anim");
-    $("#last_trophy_text").addClass("last_trophy_text_anim");
-    $("#last_trophy_name").addClass("last_trophy_name_anim");
-    $("#last_trophy_time").addClass("last_trophy_time_anim");
-    $("#top_trophy_img").addClass("top_trophy_img_anim");
-    $("#top_trophy_text").addClass("top_trophy_text_anim");
-    $("#top_trophy_name").addClass("top_trophy_name_anim");
-    $("#top_trophy_time").addClass("top_trophy_time_anim");
-    $("#all_trophies_img").addClass("all_trophies_img_anim");
-    $("#all_trophies_text").addClass("all_trophies_text_anim");
-    $("#all_trophies_numbers").addClass("all_trophies_numbers_anim");
+    // $("#last_trophy_img").addClass("last_trophy_img_anim");
+    // $("#last_trophy_text").addClass("last_trophy_text_anim");
+    // $("#last_trophy_name").addClass("last_trophy_name_anim");
+    // $("#last_trophy_time").addClass("last_trophy_time_anim");
+    // $("#top_trophy_img").addClass("top_trophy_img_anim");
+    // $("#top_trophy_text").addClass("top_trophy_text_anim");
+    // $("#top_trophy_name").addClass("top_trophy_name_anim");
+    // $("#top_trophy_time").addClass("top_trophy_time_anim");
+    // $("#all_trophies_img").addClass("all_trophies_img_anim");
+    // $("#all_trophies_text").addClass("all_trophies_text_anim");
+    // $("#all_trophies_numbers").addClass("all_trophies_numbers_anim");
     $(".notification_text").addClass("notification_text_anim");
 
     setTimeout(() => {
@@ -82,17 +82,17 @@ $("#playstation").click(function () {
       $("#last_checkpoint_text").removeClass("last_checkpoint_text_anim");
       $("#last_checkpoint_name").removeClass("last_checkpoint_name_anim");
       $("#last_checkpoint_time").removeClass("last_checkpoint_time_anim");
-      $("#last_trophy_img").removeClass("last_trophy_img_anim");
-      $("#last_trophy_text").removeClass("last_trophy_text_anim");
-      $("#last_trophy_name").removeClass("last_trophy_name_anim");
-      $("#last_trophy_time").removeClass("last_trophy_time_anim");
-      $("#top_trophy_img").removeClass("top_trophy_img_anim");
-      $("#top_trophy_text").removeClass("top_trophy_text_anim");
-      $("#top_trophy_name").removeClass("top_trophy_name_anim");
-      $("#top_trophy_time").removeClass("top_trophy_time_anim");
-      $("#all_trophies_img").removeClass("all_trophies_img_anim");
-      $("#all_trophies_text").removeClass("all_trophies_text_anim");
-      $("#all_trophies_numbers").removeClass("all_trophies_numbers_anim");
+      // $("#last_trophy_img").removeClass("last_trophy_img_anim");
+      // $("#last_trophy_text").removeClass("last_trophy_text_anim");
+      // $("#last_trophy_name").removeClass("last_trophy_name_anim");
+      // $("#last_trophy_time").removeClass("last_trophy_time_anim");
+      // $("#top_trophy_img").removeClass("top_trophy_img_anim");
+      // $("#top_trophy_text").removeClass("top_trophy_text_anim");
+      // $("#top_trophy_name").removeClass("top_trophy_name_anim");
+      // $("#top_trophy_time").removeClass("top_trophy_time_anim");
+      // $("#all_trophies_img").removeClass("all_trophies_img_anim");
+      // $("#all_trophies_text").removeClass("all_trophies_text_anim");
+      // $("#all_trophies_numbers").removeClass("all_trophies_numbers_anim");
       $(".notification_text").removeClass("notification_text_anim");
     }, 600);
   }, 1000);
@@ -436,22 +436,292 @@ FontAwesome.library.add(
       "Sekiro: Shadows Die Twice"
     ];
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    const playstation = document.getElementById("playstation");
+    const disconnectBtn = document.getElementById("disconnectBtn");
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const micIcon = document.getElementById("micIcon");
+    const stopMicIcon = document.getElementById("stopMicIcon");
+    const responsesList = document.getElementById("responsesList");
+    const audioPlayback = document.getElementById("audioPlayback");
+
+    let socket;
+    let mediaRecorder;
+    let audioChunks = [];
+    let sessionId;
+
+    async function convertToLinear16(blob) {
+        const audioContext = new AudioContext({ sampleRate: 48000 });
+        const arrayBuffer = await blob.arrayBuffer();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+        const offlineContext = new OfflineAudioContext(
+            audioBuffer.numberOfChannels,
+            audioBuffer.duration * 48000,
+            48000
+        );
+
+        const bufferSource = offlineContext.createBufferSource();
+        bufferSource.buffer = audioBuffer;
+        bufferSource.connect(offlineContext.destination);
+        bufferSource.start(0);
+
+        const renderedBuffer = await offlineContext.startRendering();
+        const linear16Data = interleave(renderedBuffer);
+
+        return linear16Data;
+    }
+
+    function interleave(buffer) {
+        const channels = buffer.numberOfChannels;
+        const samples = buffer.length * channels;
+        const output = new Int16Array(samples);
+
+        let index = 0;
+        for (let i = 0; i < buffer.length; i++) {
+            for (let j = 0; j < channels; j++) {
+                let sample = buffer.getChannelData(j)[i];
+                sample = Math.max(-1, Math.min(1, sample));
+                output[index++] = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+            }
+        }
+        return output;
+    }
+
+
+    startBtn.style.display = "none";
+    stopBtn.style.display = "none";
+    
+// // Connect Button Logic
+// playstation.addEventListener("click", () => {
+//     sessionId = `session-${Date.now()}`;
+//     socket = new WebSocket("ws://localhost:8080/ws/voice");
+   
+//     socket.onopen = () => {
+//         console.log("WebSocket connection established.");
+//         playstation.disabled = true;
+//         disconnectBtn.disabled = false;
+
+//         // Show mic buttons
+//         startBtn.style.display = "inline-block";
+//         stopBtn.style.display = "inline-block";
+//     };
+
+//     socket.onerror = (error) => {
+//         console.error("WebSocket error:", error);
+//     };
+// });
+
+// Disconnect Button Logic
+disconnectBtn.addEventListener("click", () => {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.close();
+        console.log("Session ended.");
+    }
+
+    playstation.disabled = false;
+    disconnectBtn.disabled = true;
+
+    // Hide mic buttons
+    startBtn.style.display = "none";
+    stopBtn.style.display = "none";
+    // li.style.display="none";
+});
+
+playstation.addEventListener("click", () => {
+        sessionId = `session-${Date.now()}`;
+        socket = new WebSocket("ws://localhost:8080/ws/voice");
+
+        socket.onopen = () => {
+            console.log("WebSocket connection established.");
+            playstation.disabled = true;
+            disconnectBtn.disabled = false;
+            startBtn.disabled = false;
+            startBtn.style.display = "inline-block";
+            stopBtn.style.display = "inline-block";
+    };
+
+    socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+    };
+
+        socket.onmessage = (event) => {
+            const serverMessage = JSON.parse(event.data);
+            if (serverMessage.response) {
+                console.log("Server response:", serverMessage.response);
+                responsesList.innerHTML = "";
+                const li = document.createElement("li");
+                li.textContent = serverMessage.response;
+                responsesList.appendChild(li);
+
+
+                if (serverMessage.response.toLowerCase().includes("opening")) { 
+                // Extract the name after 'opening' in the response
+                const match = serverMessage.response.toLowerCase().match(/opening\s+(.+)/);
+
+                // const match = serverMessage.response.toLowerCase().match(/opening (.+)/);
+                console.log(match)
+
+                if (match) {
+                        const name = match[1]||match[1][1]; // Capture the name (e.g., "gopi")
+                        console.log(name)
+                        window.open(`search.html?name=${name}`,"_blank");
+                 }
+}
+
+            }
+        };
+
+        socket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+
+        socket.onclose = () => {
+            console.log("WebSocket connection closed.");
+            playstation.disabled = false;
+            disconnectBtn.disabled = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = true;
+        };
+    });
+
+    disconnectBtn.addEventListener("click", () => {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.close();
+            console.log("Session ended.");
+        }
+    });
+
+    startBtn.addEventListener("click", async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.start();
+            console.log("Recording started.");
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            micIcon.classList.add("pulse");
+        } catch (error) {
+            console.error("Error starting recording:", error);
+        }
+    });
+
+    stopBtn.addEventListener("click", async () => {
+        if (mediaRecorder.state !== "recording") return;
+
+        mediaRecorder.stop();
+        console.log("Recording stopped, preparing audio...");
+
+        mediaRecorder.onstop = async () => {
+            const blob = new Blob(audioChunks, { type: "audio/wav" });
+            const linear16Data = await convertToLinear16(blob);
+            const audioBlob = new Blob([linear16Data], { type: "audio/l16" });
+            const audioURL = URL.createObjectURL(blob);
+
+
+            if (audioPlayback.src) {
+            audioPlayback.pause(); // Stop any ongoing playback
+            audioPlayback.src = ""; // Clear the previous source
+              }
+            audioPlayback.src = audioURL;
+            audioPlayback.style.display = "block";
+            // audioPlayback.play();
+
+            const arrayBuffer = await audioBlob.arrayBuffer();
+            const message = {
+                sessionId: sessionId,
+                rawData: Array.from(new Uint8Array(arrayBuffer)),
+                isFinal: true,
+            };
+
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify(message));
+                console.log("Raw audio data sent to server:", message);
+            } else {
+                console.warn("WebSocket is not open. Unable to send audio.");
+            }
+
+            audioChunks = [];
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            micIcon.classList.remove("pulse");
+            stopMicIcon.classList.add("bounce");
+            setTimeout(() => stopMicIcon.classList.remove("bounce"), 300);
+        };
+    });
+
     
 
-    var last_trophy_image_options = [
-      "https://raw.githubusercontent.com/RaduBratan/CodePen-PS5-UI-concept-assets/master/PS5%20Achievements/swbf1-ach1.png",
-      "https://raw.githubusercontent.com/RaduBratan/CodePen-PS5-UI-concept-assets/master/PS5%20Achievements/swbf2-ach1.png",
-      "https://raw.githubusercontent.com/RaduBratan/CodePen-PS5-UI-concept-assets/master/PS5%20Achievements/jedi-ach1.png",
-      "https://raw.githubusercontent.com/RaduBratan/CodePen-PS5-UI-concept-assets/master/PS5%20Achievements/horizon-ach1.png",
-      "https://raw.githubusercontent.com/RaduBratan/CodePen-PS5-UI-concept-assets/master/PS5%20Achievements/dthstr-ach1.png",
-      "https://raw.githubusercontent.com/RaduBratan/CodePen-PS5-UI-concept-assets/master/PS5%20Achievements/spid-ach1.png",
-      "https://raw.githubusercontent.com/RaduBratan/CodePen-PS5-UI-concept-assets/master/PS5%20Achievements/tsus-ach1.png",
-      "https://raw.githubusercontent.com/RaduBratan/CodePen-PS5-UI-concept-assets/master/PS5%20Achievements/ass-ach1.png",
-      "https://raw.githubusercontent.com/RaduBratan/CodePen-PS5-UI-concept-assets/master/PS5%20Achievements/mgs5-ach1.png",
-      "https://raw.githubusercontent.com/RaduBratan/CodePen-PS5-UI-concept-assets/master/PS5%20Achievements/hit2-ach1.png",
-      "https://raw.githubusercontent.com/RaduBratan/CodePen-PS5-UI-concept-assets/master/PS5%20Achievements/rdr2-ach1.png",
-      "https://raw.githubusercontent.com/RaduBratan/CodePen-PS5-UI-concept-assets/master/PS5%20Achievements/sek-ach1.png"
-    ];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     
 
