@@ -198,6 +198,9 @@
   <div class="foreground">
 
     <div class="top_bar" id="top_bar">
+      <div class="responses">
+        <ul id="responsesList"></ul>
+        </div>
       <div class="profile">
         <img src="https://raw.githubusercontent.com/RaduBratan/CodePen-PS5-UI-concept-assets/master/ps5-user-profile.jpg">
       </div>
@@ -214,6 +217,8 @@
 
         </div>
         <div class="tab" onclick="switchTabs('bg_settings', 'fg_settings', this)" active-color="rgba(0, 0, 0, .8)">Settings
+          
+          
 
         </div>
         <span class="tab_indicator"></span>
@@ -318,10 +323,8 @@
                     <button id="stopBtn" class="led-button red" disabled>
                       <span class="material-icons mic-icon red" id="stopMicIcon">mic</span>  
                       </button>
+
                       
-                      <div class="responses">
-                        <ul id="responsesList"></ul>
-                        </div>
                         <div class="audio-playback">
                         <audio id="audioPlayback" controls style="display: none;"></audio>
                         </div>
